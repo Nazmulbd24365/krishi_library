@@ -1,0 +1,568 @@
+// Shah Agriculture Information Library (SAIL) - Prisma schema
+// Target database: PostgreSQL (Supabase).
+// Enum-like values are stored as String for portability and simple validation.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ------------------------------------------------------------------
+// AUTH / USERS / AUDIT
+// ------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CONTENT_MANAGER") // SUPER_ADMIN | EDITOR | CONTENT_MANAGER
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions  Session[]
+  auditLogs AuditLog[]
+
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String // create | update | delete | login | publish ...
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ------------------------------------------------------------------
+// SITE CONFIGURATION (singletons use fixed ids)
+// ------------------------------------------------------------------
+
+model SiteSettings {
+  id              String   @id @default("settings")
+  siteNameBn      String   @default("শাহ কৃষি তথ্য পাঠাগার")
+  siteNameEn      String   @default("Shah Agriculture Information Library")
+  shortNameBn     String   @default("কৃষি")
+  shortNameEn     String   @default("Krishi")
+  taglineBn       String?
+  taglineEn       String?
+  logoUrl         String?
+  faviconUrl      String?
+  footerAboutBn   String?
+  footerAboutEn   String?
+  addressBn       String?
+  addressEn       String?
+  phone1          String?
+  phone2          String?
+  email1          String?
+  email2          String?
+  openingHoursBn  String?
+  openingHoursEn  String?
+  mapEmbedUrl     String?
+  metaTitleBn     String?
+  metaTitleEn     String?
+  metaDescriptionBn String?
+  metaDescriptionEn String?
+  metaKeywords    String?
+  primaryColor    String   @default("#1f5132")
+  updatedAt       DateTime @updatedAt
+}
+
+model NavigationItem {
+  id           String   @id @default(cuid())
+  labelBn      String
+  labelEn      String
+  url          String   @default("/")
+  type         String   @default("internal") // internal | external
+  parentId     String?
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  openInNewTab Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  parent   NavigationItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavigationItem[] @relation("NavTree")
+
+  @@index([parentId])
+  @@index([order])
+}
+
+model SocialLink {
+  id       String   @id @default(cuid())
+  platform String // facebook | youtube | instagram | linkedin | x | other
+  label    String
+  url      String
+  icon     String?
+  order    Int      @default(0)
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+model Notice {
+  id         String    @id @default(cuid())
+  titleBn    String
+  titleEn    String?
+  contentBn  String?
+  contentEn  String?
+  url        String?
+  isExternal Boolean   @default(false)
+  priority   Int       @default(0)
+  isActive   Boolean   @default(true)
+  startDate  DateTime?
+  endDate    DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([priority])
+}
+
+model WeatherCache {
+  id          String   @id @default(cuid())
+  division    String   @unique
+  provider    String
+  temperature Float?
+  condition   String?
+  conditionBn String?
+  icon        String?
+  humidity    Int?
+  windSpeed   Float?
+  payload     Json?
+  ok          Boolean  @default(false)
+  fetchedAt   DateTime @default(now())
+  expiresAt   DateTime
+}
+
+// ------------------------------------------------------------------
+// HOMEPAGE CONTENT
+// ------------------------------------------------------------------
+
+model HeroSlide {
+  id             String   @id @default(cuid())
+  headingBn      String
+  headingEn      String?
+  descriptionBn  String?
+  descriptionEn  String?
+  buttonTextBn   String?
+  buttonTextEn   String?
+  buttonUrl      String?
+  isExternal     Boolean  @default(false)
+  imageUrl       String
+  imageAlt       String?
+  order          Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([order])
+}
+
+model StatisticSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique // books | programs | publications | achievements
+  labelBn     String
+  labelEn     String
+  value       Int      @default(0)
+  useManual   Boolean  @default(false)
+  order       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutContent {
+  id           String   @id @default("about")
+  headingBn    String   @default("শাহ কৃষি তথ্য পাঠাগার ও জাদুঘর")
+  headingEn    String   @default("Shah Agriculture Information Library and Museum")
+  contentBn    String?
+  contentEn    String?
+  excerptBn    String?
+  excerptEn    String?
+  imageUrl     String?
+  youtubeUrl   String?
+  updatedAt    DateTime @updatedAt
+}
+
+model FounderMessage {
+  id            String   @id @default("founder")
+  nameBn        String   @default("জাহাঙ্গীর আলম শাহ্")
+  nameEn        String   @default("Jahangir Alam Shah")
+  designationBn String   @default("প্রতিষ্ঠাতা চেয়ারম্যান")
+  designationEn String   @default("Founder Chairman")
+  messageBn     String?
+  messageEn     String?
+  portraitUrl   String?
+  readMoreUrl   String?
+  updatedAt     DateTime @updatedAt
+}
+
+model MissionVision {
+  id           String   @id @default("mission")
+  missionBn    String?
+  missionEn    String?
+  visionBn     String?
+  visionEn     String?
+  objectivesBn String?
+  objectivesEn String?
+  updatedAt    DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  designation String?
+  location    String?
+  photoUrl    String?
+  messageBn   String?
+  messageEn   String?
+  language    String   @default("bn")
+  order       Int      @default(0)
+  status      String   @default("pending") // pending | published | rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([order])
+}
+
+// ------------------------------------------------------------------
+// LIBRARY
+// ------------------------------------------------------------------
+
+model BookCategory {
+  id            String   @id @default(cuid())
+  nameBn        String
+  nameEn        String?
+  slug          String   @unique
+  descriptionBn String?
+  descriptionEn String?
+  icon          String?
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  books Book[]
+}
+
+model Book {
+  id             String   @id @default(cuid())
+  serialNo       Int?
+  nameBn         String
+  nameEn         String?
+  authorBn       String?
+  authorEn       String?
+  copies         Int      @default(1)
+  rackNo         String?
+  categoryId     String?
+  isbn           String?
+  publisher      String?
+  publicationYear Int?
+  language       String   @default("bn")
+  description    String?
+  coverImage     String?
+  keywords       String?
+  isAvailable    Boolean  @default(true)
+  status         String   @default("published")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  category BookCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
+  @@index([serialNo])
+  @@index([nameBn])
+}
+
+// ------------------------------------------------------------------
+// MUSEUM / GALLERY
+// ------------------------------------------------------------------
+
+model MuseumCategory {
+  id     String @id @default(cuid())
+  nameBn String
+  nameEn String?
+  order  Int    @default(0)
+
+  items MuseumItem[]
+}
+
+model MuseumItem {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  descriptionBn String?
+  descriptionEn String?
+  categoryId    String?
+  categoryName  String?
+  imageUrl      String?
+  imageAlt      String?
+  period        String?
+  order         Int      @default(0)
+  status        String   @default("published")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category MuseumCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
+}
+
+model GalleryAlbum {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  descriptionBn String?
+  descriptionEn String?
+  coverImage    String?
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  images GalleryImage[]
+}
+
+model GalleryImage {
+  id         String   @id @default(cuid())
+  albumId    String?
+  captionBn  String?
+  captionEn  String?
+  imageUrl   String
+  altText    String?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  album GalleryAlbum? @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId])
+}
+
+// ------------------------------------------------------------------
+// PROGRAMS / PUBLICATIONS / ACHIEVEMENTS
+// ------------------------------------------------------------------
+
+model Program {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  descriptionBn String?
+  descriptionEn String?
+  programDate   DateTime?
+  year          Int
+  location      String?
+  categoryName  String?
+  videoUrl      String?
+  reportUrl     String?
+  order         Int      @default(0)
+  status        String   @default("published")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  images ProgramImage[]
+
+  @@index([year])
+  @@index([status])
+}
+
+model ProgramImage {
+  id        String @id @default(cuid())
+  programId String
+  imageUrl  String
+  altText   String?
+  order     Int    @default(0)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+}
+
+model Publication {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  descriptionBn String?
+  descriptionEn String?
+  coverImage    String?
+  author        String?
+  publishedDate DateTime?
+  categoryName  String?
+  fileUrl       String?
+  externalUrl   String?
+  order         Int      @default(0)
+  status        String   @default("published")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Achievement {
+  id              String   @id @default(cuid())
+  titleBn         String
+  titleEn         String?
+  descriptionBn   String?
+  descriptionEn   String?
+  imageUrl        String?
+  achievementDate DateTime?
+  categoryName    String?
+  issuer          String?
+  order           Int      @default(0)
+  status          String   @default("published")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+}
+
+// ------------------------------------------------------------------
+// MORE SECTION
+// ------------------------------------------------------------------
+
+model BoardMember {
+  id            String   @id @default(cuid())
+  nameBn        String
+  nameEn        String?
+  designationBn String?
+  designationEn String?
+  bioBn         String?
+  bioEn         String?
+  photoUrl      String?
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([order])
+}
+
+model UsefulLink {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  url           String
+  descriptionBn String?
+  descriptionEn String?
+  category      String?
+  icon          String?
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+}
+
+model ResearchItem {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  researcher    String?
+  abstractBn    String?
+  abstractEn    String?
+  researchDate  DateTime?
+  category      String?
+  imageUrl      String?
+  fileUrl       String?
+  externalUrl   String?
+  order         Int      @default(0)
+  status        String   @default("published")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+}
+
+// ------------------------------------------------------------------
+// VIDEOS
+// ------------------------------------------------------------------
+
+model Video {
+  id            String   @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  descriptionBn String?
+  descriptionEn String?
+  youtubeUrl    String
+  youtubeId     String
+  thumbnailUrl  String?
+  category      String   @default("krishi-news") // programs-news | press-media | krishi-news
+  order         Int      @default(0)
+  status        String   @default("published")
+  publishedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+}
+
+// ------------------------------------------------------------------
+// CONTACT / MEDIA
+// ------------------------------------------------------------------
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  status    String   @default("new") // new | read | archived
+  isRead    Boolean  @default(false)
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([isRead])
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  url          String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  folder       String   @default("general")
+  createdAt    DateTime @default(now())
+
+  @@index([folder])
+}

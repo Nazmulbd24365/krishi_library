@@ -1,0 +1,51 @@
+# Render Blueprint for the SAIL API (https://render.com/docs/blueprint-spec)
+#
+# After pushing this repo to GitHub:
+#   1. Render Dashboard → New → Blueprint → pick this repo.
+#   2. Fill in the `sync: false` secrets when prompted.
+#   3. Deploy, then copy the service URL (e.g. https://sail-api.onrender.com)
+#      into frontend/vercel.json.
+services:
+  - type: web
+    name: sail-api
+    runtime: node
+    plan: free
+    region: singapore # closest Render region to Bangladesh (also: oregon, frankfurt, ohio, virginia)
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /api/v1/health
+    buildCommand: npm install && npm run db:generate -w backend && npm run db:deploy -w backend && npm run build -w backend
+    startCommand: npm run start -w backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        sync: false # e.g. https://sail.vercel.app
+      - key: CORS_ORIGINS
+        value: ""
+      - key: DATABASE_URL
+        sync: false # Supabase transaction pooler, port 6543
+      - key: DIRECT_URL
+        sync: false # Supabase session pooler, port 5432
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ACCESS_TOKEN_TTL
+        value: 15m
+      - key: REFRESH_TOKEN_TTL_DAYS
+        value: 30
+      - key: STORAGE_PROVIDER
+        value: supabase
+      - key: SUPABASE_URL
+        value: https://iurbtarvbtspgmuqgfip.supabase.co
+      - key: SUPABASE_STORAGE_BUCKET
+        value: sail-media
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false # Supabase → Project Settings → API → service_role secret
+      - key: PUBLIC_API_URL
+        sync: false # this service's own public URL, e.g. https://sail-api.onrender.com
+      - key: UPLOAD_DIR
+        value: uploads
+      - key: UPLOAD_MAX_MB
+        value: 8
+      - key: WEATHER_PROVIDER
+        value: open-meteo

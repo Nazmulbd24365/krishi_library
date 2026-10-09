@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream text-farm-950 font-sans antialiased;
+}
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-farm-600 ring-offset-2 ring-offset-cream rounded;
+}
+
+/* Utility container matching the spec's narrower inner shell */
+.shell {
+  width: calc(100% - 40px);
+  max-width: 1440px;
+  margin-inline: auto;
+}
+.shell-narrow {
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.card-surface {
+  @apply bg-white rounded-2xl shadow-soft border border-farm-100;
+}
+
+.section {
+  @apply py-14 md:py-20;
+}
+
+.eyebrow {
+  @apply text-sm font-semibold uppercase tracking-wider text-farm-600;
+}
+
+.prose-bn {
+  @apply leading-relaxed md:leading-loose text-farm-900/90;
+}
+
+/* Hide scrollbar for tickers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker-scroll 32s linear infinite;
+}
+.ticker-track.paused {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .ticker-track {
+    animation: none;
+    white-space: normal;
+  }
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  @apply animate-pulse bg-farm-100 rounded-lg;
+}
