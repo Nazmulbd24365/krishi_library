@@ -70,6 +70,16 @@ if (!parsed.success) {
 
 const raw = parsed.data;
 
+// Refuse to boot production with the insecure development secret, which would
+// let anyone forge valid session tokens.
+if (raw.NODE_ENV === 'production' && raw.SESSION_SECRET === 'dev-only-insecure-secret-change-me') {
+  console.error(
+    '❌ Refusing to start: SESSION_SECRET is still the insecure development default. ' +
+      'Set a strong, unique SESSION_SECRET in the production environment.',
+  );
+  process.exit(1);
+}
+
 export const env = {
   ...raw,
   isProd: raw.NODE_ENV === 'production',
