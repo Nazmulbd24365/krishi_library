@@ -78,7 +78,10 @@ export function HeroSlider() {
             className="h-full w-full object-cover"
             fetchPriority={index === 0 ? 'high' : 'auto'}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-farm-950/90 via-farm-950/60 to-farm-950/20" />
+          {/* Text stays readable without washing out the photo: a soft scrim on the
+              text side plus a light bottom fade, instead of a heavy full overlay. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-farm-950/80 via-farm-950/35 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-farm-950/60 to-transparent" />
         </motion.div>
       </AnimatePresence>
 

@@ -2,6 +2,7 @@ import { Facebook, Instagram, Linkedin, Twitter, Youtube, Globe } from 'lucide-r
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { SocialLink } from '@/types';
+import { cn } from '@/components/ui';
 import { WeatherRotator } from './WeatherRotator';
 import { NoticeTicker } from './NoticeTicker';
 
@@ -12,6 +13,16 @@ const SOCIAL_ICONS: Record<string, typeof Facebook> = {
   linkedin: Linkedin,
   x: Twitter,
   twitter: Twitter,
+};
+
+/** Official brand colours applied to the icon on hover. */
+const SOCIAL_HOVER: Record<string, string> = {
+  facebook: 'hover:text-[#1877F2]',
+  youtube: 'hover:text-[#FF0000]',
+  instagram: 'hover:text-[#E4405F]',
+  linkedin: 'hover:text-[#0A66C2]',
+  x: 'hover:text-white',
+  twitter: 'hover:text-[#1DA1F2]',
 };
 
 export function TopHeader() {
@@ -44,7 +55,10 @@ export function TopHeader() {
                   rel="noopener noreferrer"
                   aria-label={s.label}
                   title={s.label}
-                  className="rounded-md p-1.5 text-farm-100/80 transition hover:bg-white/10 hover:text-white"
+                  className={cn(
+                    'rounded-md p-1.5 text-farm-100/80 transition',
+                    SOCIAL_HOVER[s.platform] ?? 'hover:text-white',
+                  )}
                 >
                   <Icon className="h-4 w-4" />
                 </a>

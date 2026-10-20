@@ -24,11 +24,13 @@ export function FounderSection() {
         </div>
 
         <div className="mx-auto w-full max-w-xs text-center lg:mx-0">
-          <SmartImage
-            src={data.portraitUrl}
-            alt={pick(data.nameBn, data.nameEn)}
-            className="mx-auto h-72 w-full rounded-2xl object-cover shadow-card"
-          />
+          <div className="group relative mx-auto h-64 w-64 overflow-hidden rounded-full shadow-card ring-4 ring-gold-100">
+            <SmartImage
+              src={data.portraitUrl}
+              alt={pick(data.nameBn, data.nameEn)}
+              className="h-full w-full rounded-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            />
+          </div>
           <p className="mt-4 font-display text-lg font-bold text-farm-900">{pick(data.nameBn, data.nameEn)}</p>
           <p className="text-sm text-farm-600">{pick(data.designationBn, data.designationEn)}</p>
         </div>

@@ -3,7 +3,6 @@ import { ArrowRight } from 'lucide-react';
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { AboutContent } from '@/types';
-import { VideoEmbed } from '@/components/media';
 import { SmartImage } from '@/components/ui';
 
 export function AboutSection() {
@@ -12,7 +11,7 @@ export function AboutSection() {
   if (!data) return null;
 
   return (
-    <section className="section">
+    <section className="section bg-farm-50">
       <div className="shell grid items-center gap-10 lg:grid-cols-2">
         <div>
           <p className="eyebrow">{t('home.about.title')}</p>
@@ -31,13 +30,14 @@ export function AboutSection() {
           </Link>
         </div>
 
-        <div className="space-y-4">
-          <SmartImage
-            src={data.imageUrl}
-            alt={pick(data.headingBn, data.headingEn)}
-            className="h-56 w-full rounded-2xl object-cover shadow-soft md:h-64"
-          />
-          <VideoEmbed youtubeUrl={data.youtubeUrl} title={pick(data.headingBn, data.headingEn)} />
+        <div className="flex justify-center lg:justify-end">
+          <div className="group relative h-64 w-64 overflow-hidden rounded-full shadow-soft ring-4 ring-farm-50 md:h-72 md:w-72">
+            <SmartImage
+              src={data.imageUrl}
+              alt={pick(data.headingBn, data.headingEn)}
+              className="h-full w-full rounded-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -1,14 +1,9 @@
-import { useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { usePageMeta } from '@/lib/seo';
 
-/** Set the document title for a page (cheap SEO helper). */
+/** Set the document title + canonical / social metadata for a page. */
 export function usePageTitle(title: string) {
-  useEffect(() => {
-    document.title = `${title} | SAIL`;
-    return () => {
-      document.title = 'শাহ কৃষি তথ্য পাঠাগার | Shah Agriculture Information Library';
-    };
-  }, [title]);
+  usePageMeta({ title });
 }
 
 export function PageHeader({

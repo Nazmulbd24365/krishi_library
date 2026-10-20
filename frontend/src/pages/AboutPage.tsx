@@ -2,7 +2,6 @@ import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { AboutContent, MissionVision as MV } from '@/types';
 import { PageHeader, usePageTitle } from '@/components/PageHeader';
-import { VideoEmbed } from '@/components/media';
 import { SmartImage } from '@/components/ui';
 import { MissionVision } from '@/components/home/MissionVision';
 
@@ -24,12 +23,13 @@ export default function AboutPage() {
             </p>
           </div>
           <aside className="space-y-4">
-            <SmartImage
-              src={data?.imageUrl}
-              alt={pick(data?.headingBn, data?.headingEn)}
-              className="h-64 w-full rounded-2xl object-cover shadow-soft"
-            />
-            <VideoEmbed youtubeUrl={data?.youtubeUrl} title={pick(data?.headingBn, data?.headingEn)} />
+            <div className="group relative mx-auto h-64 w-64 overflow-hidden rounded-full shadow-soft ring-4 ring-farm-50">
+              <SmartImage
+                src={data?.imageUrl}
+                alt={pick(data?.headingBn, data?.headingEn)}
+                className="h-full w-full rounded-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+              />
+            </div>
           </aside>
         </div>
       </section>

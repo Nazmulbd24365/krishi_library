@@ -68,7 +68,7 @@ export function StatCounters() {
   const { data } = useFetch<Statistic[]>('/statistics');
   if (!data || data.length === 0) return null;
   return (
-    <section className="shell -mt-10 relative z-20" aria-label={t('home.stats.title')}>
+    <section className="shell mt-10 md:mt-14" aria-label={t('home.stats.title')}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {data.map((s) => (
           <StatCard key={s.key} stat={s} />

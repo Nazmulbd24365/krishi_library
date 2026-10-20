@@ -10,6 +10,7 @@ import uploadRoutes from '../modules/upload.routes';
 import booksImportRoutes from '../modules/books-import.routes';
 import adminRoutes from '../modules/admin.routes';
 import metaRoutes from '../modules/meta.routes';
+import shareRoutes from '../modules/share.routes';
 import { RESOURCES } from '../modules/registry';
 import { createAdminRouter, createPublicRouter } from '../modules/crud.factory';
 
@@ -23,6 +24,7 @@ router.use('/contact', contactRoutes);
 router.use('/navigation', navigationRoutes);
 router.use('/statistics', statisticsRoutes);
 router.use('/', metaRoutes);
+router.use('/', shareRoutes);
 
 // Singletons: /settings, /about, /founder-message, /mission-vision
 router.use('/', singletonRoutes);

@@ -99,8 +99,55 @@ git push -u origin main
    | Name | Value |
    | --- | --- |
    | `VITE_API_URL` | `https://sail-api.onrender.com/api/v1` |
+   | `VITE_SITE_URL` | your public site URL, e.g. `https://sail.vercel.app` |
+
+   `VITE_SITE_URL` is used for canonical links and the default Open Graph image.
+   `VITE_API_URL` is also read by `frontend/middleware.ts` at runtime.
 
 5. **Deploy**. Note your URL, e.g. `https://sail.vercel.app`.
+
+### Social sharing previews (Open Graph)
+
+The frontend is a client-rendered SPA, so social crawlers cannot rely on
+JavaScript to discover metadata. `frontend/middleware.ts` is a Vercel Routing
+Middleware that detects crawler user agents and returns a small prerendered HTML
+document with page-specific Open Graph / Twitter Card tags. It fetches data from
+the public API endpoint `GET /api/v1/share-meta?path=/weather` (no credentials).
+
+- No extra Vercel configuration is required; the `middleware.ts` file convention
+  is detected automatically when the project root is `frontend`.
+- Keep `VITE_API_URL` set in Vercel so the middleware can fetch detail-page
+  metadata. Without it, crawlers still receive route-level fallback metadata.
+- After changing metadata, test with the
+  [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) and
+  the [X Card Validator](https://cards-dev.twitter.com/validator). Use
+  "Scrape Again" to clear Facebook's cache.
+- `frontend/public/og-default.png` is the 1200×630 fallback image. Article and
+  detail pages use their own cover/thumbnail when available.
+
+### Weather image generator (share dialog)
+
+The Weather Update page header has a **Share Weather** button that opens a share
+dialog with a live preview of a generated PNG infographic:
+
+- `frontend/src/lib/weatherShareImage.ts` renders the image on an HTML canvas
+  from the *same* `/api/v1/weather` response the page shows. No temperature is
+  hardcoded; missing readings render as `—` / "Unavailable".
+- Three templates are offered: square 1080×1080, portrait 1080×1350, and
+  landscape 1200×630.
+- Bengali and English are both supported; the renderer waits on
+  `document.fonts` (Hind Siliguri / Inter) so Bengali conjuncts render correctly.
+- The dialog offers **Download Image** (precise "Download started" message),
+  **Share Image** via `navigator.share({ files })` when the browser supports PNG
+  file sharing (success only after the OS share sheet resolves), and
+  Facebook / WhatsApp / Copy Link fallbacks that are explicitly labelled as
+  *page links* — they do **not** upload the image file.
+- No API keys or platform credentials are used.
+
+This runs entirely in the browser, so it needs no server or Vercel
+configuration. Verify after deploy by opening `/weather` → **Share Weather**,
+switching all three formats, downloading a PNG, and (on a supported mobile
+device) sharing the actual image file.
 
 ---
 
@@ -128,6 +175,11 @@ verification will reject requests.
 - [ ] Upload an image in the admin; it renders, and the file appears in Supabase → Storage → `sail-media/images/`.
 - [ ] Create → publish → delete a record.
 - [ ] Contact form submits (email only if SMTP is configured).
+- [ ] Weather page loads at `/weather` and its Share button uses the page URL.
+- [ ] Weather page → **Share Weather** opens the image dialog, the preview
+      updates for all three formats, and **Download Image** saves a PNG.
+- [ ] Share menu opens on a detail page; Facebook/WhatsApp links contain the encoded canonical URL; Copy Link shows a success message.
+- [ ] Paste a public page URL into the Facebook Sharing Debugger — the preview shows a page-specific title/description/image (served by the Edge Middleware, not client-side JS).
 - [ ] Change the bootstrap admin password.
 
 ---

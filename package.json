@@ -24,6 +24,7 @@
     "db:seed": "npm run db:seed -w backend",
     "db:studio": "npm run db:studio -w backend",
     "create:admin": "npm run create:admin -w backend",
+    "fix:hero-images": "npm run fix:hero-images -w backend",
     "start": "npm run start -w backend"
   },
   "devDependencies": {

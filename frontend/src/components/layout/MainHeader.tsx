@@ -92,26 +92,30 @@ export function MainHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-farm-100 bg-cream/95 backdrop-blur">
-      <div className="shell flex items-center justify-between gap-4 py-3">
+      <div className="shell flex flex-wrap items-center justify-between gap-x-4 py-3 xl:py-2.5">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-3" aria-label={siteName}>
+        <Link to="/" className="order-1 flex min-w-0 items-center gap-3" aria-label={siteName}>
           {settings?.logoUrl ? (
-            <img src={settings.logoUrl} alt="" className="h-11 w-11 rounded-xl object-cover" />
+            <img src={settings.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-xl object-cover" />
           ) : (
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-farm-700 text-white shadow-soft">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-farm-700 text-white shadow-soft">
               <Sprout className="h-6 w-6" />
             </span>
           )}
-          <span className="leading-tight">
-            <span className="block font-display text-base font-bold text-farm-900 md:text-lg">{siteName}</span>
-            <span className="hidden text-xs text-farm-500 sm:block">
+          <span className="min-w-0 leading-tight">
+            <span className="block truncate font-display text-base font-bold text-farm-900 md:text-lg">{siteName}</span>
+            <span className="hidden truncate text-xs text-farm-500 sm:block">
               {settings ? pick(settings.taglineBn, settings.taglineEn) : t('brand.sub')}
             </span>
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav ref={navRef} className="hidden items-center gap-0.5 xl:flex" aria-label="Main navigation">
+        <nav
+          ref={navRef}
+          className="order-3 hidden w-full basis-full items-center justify-center gap-0.5 border-t border-farm-100/70 pt-2 xl:flex"
+          aria-label="Main navigation"
+        >
           {items.map((item) => {
             const hasChildren = (item.children?.length ?? 0) > 0;
             const label = pick(item.labelBn, item.labelEn);
@@ -124,7 +128,7 @@ export function MainHeader() {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-farm-800 transition hover:bg-farm-50 hover:text-farm-900"
+                  className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-farm-800 transition hover:bg-farm-50 hover:text-farm-900"
                 >
                   {label}
                 </a>
@@ -135,7 +139,7 @@ export function MainHeader() {
                   end={item.url === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'rounded-lg px-3 py-2 text-sm font-medium transition',
+                      'shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition',
                       isActive ? 'bg-farm-100 text-farm-900' : 'text-farm-800 hover:bg-farm-50 hover:text-farm-900',
                     )
                   }
@@ -158,7 +162,7 @@ export function MainHeader() {
                   aria-haspopup="true"
                   onClick={() => setOpenMenu(open ? null : item.id)}
                   className={cn(
-                    'flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition',
+                    'flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition',
                     open ? 'bg-farm-100 text-farm-900' : 'text-farm-800 hover:bg-farm-50',
                   )}
                 >
@@ -205,8 +209,8 @@ export function MainHeader() {
         </nav>
 
         {/* Right controls */}
-        <div className="flex items-center gap-2">
-          <SearchBar className="relative hidden lg:block lg:w-56 xl:w-64" />
+        <div className="order-2 flex shrink-0 items-center gap-2">
+          <SearchBar className="relative hidden lg:block lg:w-56 xl:w-64 2xl:w-80" />
           <Link
             to="/admin"
             className="hidden rounded-lg p-2 text-farm-600 transition hover:bg-farm-50 hover:text-farm-800 sm:block"

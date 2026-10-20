@@ -3,14 +3,17 @@ import { ArrowLeft, Download, ExternalLink } from 'lucide-react';
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { Publication } from '@/types';
-import { usePageTitle } from '@/components/PageHeader';
 import { Card, ErrorState, Skeleton, SmartImage } from '@/components/ui';
+import { ShareButton } from '@/components/ShareButton';
+import { usePageMeta } from '@/lib/seo';
 
 export default function PublicationDetailPage() {
   const { id } = useParams();
   const { t, pick, formatDate } = useI18n();
   const { data: pub, loading, error, refetch } = useFetch<Publication>(id ? `/publications/${id}` : null);
-  usePageTitle(pick(pub?.titleBn, pub?.titleEn) || t('publication.title'));
+  const title = pick(pub?.titleBn, pub?.titleEn) || t('publication.title');
+  const description = pick(pub?.descriptionBn, pub?.descriptionEn) || t('publication.subtitle');
+  usePageMeta({ title, description, image: pub?.coverImage, type: 'article' });
 
   return (
     <section className="section">
@@ -29,6 +32,9 @@ export default function PublicationDetailPage() {
                 {pub.author && <span>{pub.author}</span>}
                 {pub.publishedDate && <span>{formatDate(new Date(pub.publishedDate))}</span>}
                 {pub.categoryName && <span>{pub.categoryName}</span>}
+              </div>
+              <div className="mt-4">
+                <ShareButton size="sm" title={title} description={description} />
               </div>
               <p className="prose-bn mt-5 whitespace-pre-line text-farm-700">{pick(pub.descriptionBn, pub.descriptionEn)}</p>
               <div className="mt-6 flex flex-wrap gap-3">

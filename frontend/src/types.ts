@@ -80,6 +80,12 @@ export interface WeatherEntry {
   stale: boolean;
 }
 
+export interface WeatherResponse {
+  provider: string;
+  units: string;
+  divisions: WeatherEntry[];
+}
+
 export interface HeroSlide {
   id: string;
   headingBn: string;

@@ -3,14 +3,21 @@ import { ArrowLeft } from 'lucide-react';
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { Book } from '@/types';
-import { usePageTitle } from '@/components/PageHeader';
 import { Badge, Card, ErrorState, Skeleton, SmartImage } from '@/components/ui';
+import { ShareButton } from '@/components/ShareButton';
+import { usePageMeta } from '@/lib/seo';
 
 export default function BookDetailPage() {
   const { id } = useParams();
   const { t, pick } = useI18n();
   const { data: book, loading, error, refetch } = useFetch<Book>(id ? `/books/${id}` : null);
-  usePageTitle(pick(book?.nameBn, book?.nameEn) || t('library.bookDetail'));
+  const title = pick(book?.nameBn, book?.nameEn) || t('library.bookDetail');
+  usePageMeta({
+    title,
+    description: book?.description || t('library.subtitle'),
+    image: book?.coverImage,
+    type: 'article',
+  });
 
   const rows: [string, string | number | undefined | null][] = book
     ? [
@@ -47,6 +54,9 @@ export default function BookDetailPage() {
                 <Badge tone={book.isAvailable ? 'farm' : 'red'}>
                   {book.isAvailable ? t('library.available') : t('library.unavailable')}
                 </Badge>
+              </div>
+              <div className="mt-4">
+                <ShareButton size="sm" title={title} description={book.description} />
               </div>
               <dl className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
                 {rows.map(([label, value]) => (

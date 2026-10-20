@@ -3,6 +3,16 @@ import { extractYouTubeId, youtubeThumbnail } from '../src/utils/youtube';
 
 const img = (seed: string, w = 1280, h = 800) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
+/**
+ * Hero slide background images.
+ * Uses stable, high-resolution agriculture photographs (Unsplash CDN) instead of
+ * random placeholders so the homepage slider always renders clear, relevant images.
+ * These are only seed defaults — every slide image stays fully editable from the
+ * admin dashboard (Hero Slides → Background image).
+ */
+const heroImg = (id: string, w = 1920, h = 1080) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
+
 const ABOUT_BN = `আমি মো. জাহাঙ্গীর আলম শাহ্। একবারে নিভৃত পল্লিতে কৃষকের ঘরে জন্মগ্রহণ করি। জন্মের পর থেকেই কৃষি ও কৃষকের চাষ-বাস এবং প্রান্তিক চাষীদের জীবন ব্যবস্থার অতীব করুণ ও রুগ্নচিত্র দেখেছি খুব কাছ থেকে। শিশুকাল থেকেই কৃষির প্রতি অনুরাগী ছিলাম। পাশাপাশি কৃষি শিক্ষার ভাণ্ডারের অভাব আমার জীবনকে দারুণভাবে স্পর্শ করতো। মূলত সে কারণেই কৃষি কাঠামোর দ্রুত পরিবর্তনে কৃষক উপযোগী পাঠাগার ও জাদুঘর প্রতিষ্ঠা করি। ২০০৮ খ্রিস্টাব্দে কৃষিতথ্য পাঠাগার ও জাদুঘর কার্যক্রম শুরু করে এজাবতকাল নানা আয়োজনের মাধ্যমে কৃষি শিক্ষা এবং পরিবেশ উন্নয়নে ভূমিকা রেখে চলেছে। বর্তমানে কৃষক, গবেষক, পাঠক, শিক্ষক-শিক্ষার্থী।`;
 
 const FOUNDER_EN = `Agricultural education in the country is not continually developing. Philosophically agricultural problem solving has come only from the knowledge of farmers. So, to build many facets of agricultural education, the agriculture information is required to be added with the farmer's knowledge. But facility of information and knowledge is not accessible to all equally in our country. The farmers deprived of subject wise access to contact scientist/personalities and hungry for specific knowledge based books on agriculture. This reality was the need for establishment of this library of information for farmers. Our farmers are deprived of being great stakeholders on agricultural arena. As the farmers are the backbone of our agricultural system, therefore, it was felt necessary to utilize a proven educational process, one which includes access to education, experiential learning, leadership and personal development. With all these views I intended to establish, a library to provide up-to-date technical skills and knowledge in agriculture; conducting experiential learning activities in the agricultural field at local and national levels. I am happy that with the passage of time, my little endeavour has been able to attract people from home and abroad. May the library and the farmers continue to flourish?`;
@@ -153,9 +163,9 @@ async function main() {
   if (await isEmpty(prisma.heroSlide)) {
     await prisma.heroSlide.createMany({
       data: [
-        { headingBn: 'কৃষকের জ্ঞানেই কৃষির সমাধান', headingEn: 'Farmer knowledge is the key to agriculture', descriptionBn: 'কৃষি তথ্য, শিক্ষা ও গবেষণার নির্ভরযোগ্য ঠিকানা।', descriptionEn: 'A trusted home for agricultural information, education and research.', buttonTextBn: 'পাঠাগার দেখুন', buttonTextEn: 'Explore Library', buttonUrl: '/library', imageUrl: img('hero-farm'), imageAlt: 'সবুজ ধানখেত', order: 0 },
-        { headingBn: 'আধুনিক কৃষি প্রযুক্তি শিখুন', headingEn: 'Learn modern agricultural technology', descriptionBn: 'ঐতিহ্য ও আধুনিক পদ্ধতির সমন্বয়ে কৃষি শিক্ষা।', descriptionEn: 'Agricultural education blending tradition and modern methods.', buttonTextBn: 'কার্যক্রম', buttonTextEn: 'Programs', buttonUrl: '/programs', imageUrl: img('hero-tech'), imageAlt: 'কৃষি প্রযুক্তি', order: 1 },
-        { headingBn: 'কৃষি জাদুঘর পরিদর্শন করুন', headingEn: 'Visit our agriculture museum', descriptionBn: 'ঐতিহাসিক কৃষি উপকরণ ও শিক্ষামূলক সংগ্রহ।', descriptionEn: 'Historic farming tools and educational collections.', buttonTextBn: 'জাদুঘর', buttonTextEn: 'Museum', buttonUrl: '/museum', imageUrl: img('hero-museum'), imageAlt: 'কৃষি জাদুঘর', order: 2 },
+        { headingBn: 'কৃষকের জ্ঞানেই কৃষির সমাধান', headingEn: 'Farmer knowledge is the key to agriculture', descriptionBn: 'কৃষি তথ্য, শিক্ষা ও গবেষণার নির্ভরযোগ্য ঠিকানা।', descriptionEn: 'A trusted home for agricultural information, education and research.', buttonTextBn: 'পাঠাগার দেখুন', buttonTextEn: 'Explore Library', buttonUrl: '/library', imageUrl: heroImg('1500382017468-9049fed747ef'), imageAlt: 'সবুজ ধানখেত', order: 0 },
+        { headingBn: 'আধুনিক কৃষি প্রযুক্তি শিখুন', headingEn: 'Learn modern agricultural technology', descriptionBn: 'ঐতিহ্য ও আধুনিক পদ্ধতির সমন্বয়ে কৃষি শিক্ষা।', descriptionEn: 'Agricultural education blending tradition and modern methods.', buttonTextBn: 'কার্যক্রম', buttonTextEn: 'Programs', buttonUrl: '/programs', imageUrl: heroImg('1625246333195-78d9c38ad449'), imageAlt: 'কৃষি প্রযুক্তি', order: 1 },
+        { headingBn: 'কৃষি জাদুঘর পরিদর্শন করুন', headingEn: 'Visit our agriculture museum', descriptionBn: 'ঐতিহাসিক কৃষি উপকরণ ও শিক্ষামূলক সংগ্রহ।', descriptionEn: 'Historic farming tools and educational collections.', buttonTextBn: 'জাদুঘর', buttonTextEn: 'Museum', buttonUrl: '/museum', imageUrl: heroImg('1595246140625-573b715d11dc'), imageAlt: 'কৃষি জাদুঘর', order: 2 },
       ],
     });
   }

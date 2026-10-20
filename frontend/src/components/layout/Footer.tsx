@@ -3,6 +3,7 @@ import { Facebook, Globe, Instagram, Linkedin, Mail, MapPin, Phone, Sprout, Twit
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { SiteSettings, SocialLink } from '@/types';
+import { cn } from '@/components/ui';
 
 const SOCIAL_ICONS: Record<string, typeof Facebook> = {
   facebook: Facebook,
@@ -11,6 +12,16 @@ const SOCIAL_ICONS: Record<string, typeof Facebook> = {
   linkedin: Linkedin,
   x: Twitter,
   twitter: Twitter,
+};
+
+/** Official brand colours applied to the icon on hover. */
+const SOCIAL_HOVER: Record<string, string> = {
+  facebook: 'hover:text-[#1877F2]',
+  youtube: 'hover:text-[#FF0000]',
+  instagram: 'hover:text-[#E4405F]',
+  linkedin: 'hover:text-[#0A66C2]',
+  x: 'hover:text-white',
+  twitter: 'hover:text-[#1DA1F2]',
 };
 
 export function Footer() {
@@ -22,6 +33,7 @@ export function Footer() {
     { label: t('nav.about'), to: '/about' },
     { label: t('nav.programs'), to: '/programs' },
     { label: t('nav.achievement'), to: '/achievement' },
+    { label: t('nav.weather'), to: '/weather' },
     { label: t('nav.contact'), to: '/contact' },
   ];
   const libraryLinks = [
@@ -60,7 +72,10 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="rounded-lg bg-white/5 p-2 transition hover:bg-white/15"
+                  className={cn(
+                    'rounded-lg bg-white/5 p-2 text-farm-100/80 transition',
+                    SOCIAL_HOVER[s.platform] ?? 'hover:text-white',
+                  )}
                 >
                   <Icon className="h-4 w-4" />
                 </a>

@@ -3,15 +3,23 @@ import { ArrowLeft, CalendarDays, MapPin } from 'lucide-react';
 import { useFetch } from '@/lib/useApi';
 import { useI18n } from '@/i18n';
 import type { Program } from '@/types';
-import { usePageTitle } from '@/components/PageHeader';
 import { Badge, Card, ErrorState, Skeleton, SmartImage } from '@/components/ui';
 import { VideoEmbed } from '@/components/media';
+import { ShareButton } from '@/components/ShareButton';
+import { usePageMeta } from '@/lib/seo';
 
 export default function ProgramDetailPage() {
   const { id } = useParams();
   const { t, pick, formatDate } = useI18n();
   const { data: program, loading, error, refetch } = useFetch<Program>(id ? `/programs/${id}` : null);
-  usePageTitle(pick(program?.titleBn, program?.titleEn) || t('programs.detail'));
+  const title = pick(program?.titleBn, program?.titleEn) || t('programs.detail');
+  const description = pick(program?.descriptionBn, program?.descriptionEn) || t('programs.subtitle');
+  usePageMeta({
+    title,
+    description,
+    image: program?.images?.[0]?.imageUrl,
+    type: 'article',
+  });
 
   return (
     <section className="section">
@@ -22,7 +30,7 @@ export default function ProgramDetailPage() {
         {loading && <Skeleton className="h-80" />}
         {error && <ErrorState message={error} onRetry={refetch} />}
         {!loading && program && (
-          <Card className="overflow-hidden">
+          <Card>
             <div className="grid gap-0 md:grid-cols-2">
               <div className="p-6 md:p-8">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-farm-500">
@@ -43,6 +51,9 @@ export default function ProgramDetailPage() {
                       <MapPin className="h-4 w-4" /> {program.location}
                     </span>
                   )}
+                </div>
+                <div className="mt-4">
+                  <ShareButton size="sm" title={title} description={description} />
                 </div>
                 <p className="prose-bn mt-5 whitespace-pre-line text-farm-700">
                   {pick(program.descriptionBn, program.descriptionEn)}

@@ -21,8 +21,10 @@ import VideoDetailPage from '@/pages/VideoDetailPage';
 import NoticesPage from '@/pages/NoticesPage';
 import NoticeDetailPage from '@/pages/NoticeDetailPage';
 import ContactPage from '@/pages/ContactPage';
+import WeatherPage from '@/pages/WeatherPage';
 import { PrivacyPage, TermsPage } from '@/pages/StaticPages';
 import NotFoundPage from '@/pages/NotFoundPage';
+import ErrorPage from '@/pages/ErrorPage';
 
 import LoginPage from '@/admin/LoginPage';
 import AdminLayout from '@/admin/AdminLayout';
@@ -39,6 +41,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <PublicLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'about', element: <AboutPage /> },
@@ -59,6 +62,7 @@ export const router = createBrowserRouter([
       { path: 'notices', element: <NoticesPage /> },
       { path: 'notices/:id', element: <NoticeDetailPage /> },
       { path: 'contact', element: <ContactPage /> },
+      { path: 'weather', element: <WeatherPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: '*', element: <NotFoundPage /> },
@@ -68,6 +72,7 @@ export const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },
