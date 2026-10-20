@@ -1,0 +1,29 @@
+# Netlify configuration for the SAIL frontend (Vite SPA).
+#
+# Netlify UI equivalent:
+#   Base directory:    frontend
+#   Build command:     npm run build
+#   Publish directory: frontend/dist
+#
+# The SPA redirect is required so client-side routes (e.g. /library, /museum)
+# resolve to index.html instead of 404-ing on a hard refresh.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page application fallback — keep this last so it never shadows assets.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
