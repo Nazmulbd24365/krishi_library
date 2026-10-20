@@ -14,7 +14,7 @@ services:
     branch: main
     autoDeploy: true
     healthCheckPath: /api/v1/health
-    buildCommand: npm install && npm run db:generate -w backend && npm run db:deploy -w backend && npm run build -w backend
+    buildCommand: npm ci && npm run db:generate -w backend && npm run db:deploy -w backend && npm run build -w backend
     startCommand: npm run start -w backend
     envVars:
       - key: NODE_ENV
