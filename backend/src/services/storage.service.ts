@@ -59,6 +59,20 @@ function supabaseObjectEndpoint(subfolder: string, filename: string): string {
   return `${env.SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/${env.SUPABASE_STORAGE_BUCKET}/${subfolder}/${filename}`;
 }
 
+/**
+ * Auth headers for the Supabase Storage REST API.
+ *
+ * New-style secret keys (`sb_secret_...`) are **not** JWTs, so they must be sent
+ * on the `apikey` header — sending one as `Authorization: Bearer` makes Storage
+ * reject the request with `Invalid Compact JWS`. Legacy `service_role` keys are
+ * JWTs and work on either header, so we always send both. Passing the key on
+ * `Authorization` as well keeps the legacy path working.
+ */
+export function supabaseAuthHeaders(): Record<string, string> {
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  return { apikey: key, Authorization: `Bearer ${key}` };
+}
+
 export interface StoredFile {
   filename: string;
   url: string;
@@ -81,7 +95,7 @@ export async function saveUploadedFile(input: {
     const res = await fetch(supabaseObjectEndpoint(input.subfolder, filename), {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        ...supabaseAuthHeaders(),
         'Content-Type': input.mimeType || 'application/octet-stream',
         'x-upsert': 'true',
         'cache-control': 'public, max-age=31536000, immutable',
@@ -109,7 +123,7 @@ export async function deleteStoredFile(subfolder: string, filename: string): Pro
     try {
       await fetch(supabaseObjectEndpoint(subfolder, filename), {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` },
+        headers: supabaseAuthHeaders(),
       });
     } catch {
       /* best effort */
