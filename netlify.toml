@@ -1,22 +1,25 @@
 # Netlify configuration for the SAIL frontend (Vite SPA).
 #
-# Netlify UI equivalent:
-#   Base directory:    frontend
-#   Build command:     npm run build
-#   Publish directory: frontend/dist
+# This repo is an npm-workspaces monorepo: all dependencies are installed into
+# the ROOT node_modules, and the frontend lives in ./frontend. Netlify must
+# therefore install from the repo root and build the `frontend` workspace — if
+# `base` were set to "frontend", npm would run there with no node_modules and
+# the build would fail with "vite: not found".
 #
-# The SPA redirect is required so client-side routes (e.g. /library, /museum)
-# resolve to index.html instead of 404-ing on a hard refresh.
+# Netlify UI equivalent:
+#   Base directory:    (leave empty / repo root)
+#   Build command:     npm ci --include=dev && npm run build -w frontend
+#   Publish directory: frontend/dist
 
 [build]
-  base = "frontend"
-  command = "npm run build"
-  publish = "dist"
+  command = "npm ci --include=dev && npm run build -w frontend"
+  publish = "frontend/dist"
 
 [build.environment]
   NODE_VERSION = "20"
 
-# Single-page application fallback — keep this last so it never shadows assets.
+# Single-page application fallback so client-side routes (e.g. /library, /admin)
+# resolve to index.html instead of 404-ing on a hard refresh.
 [[redirects]]
   from = "/*"
   to = "/index.html"
